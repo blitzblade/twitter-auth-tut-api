@@ -34,14 +34,25 @@ def twitter_callback():
     try:
         oauth_token = request.args.get('oauth_token')
         oauth_verifier = request.args.get('oauth_verifier')
-        # print("hello")
+
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
-        auth.request_token = { "oauth_token": oauth_token, "oauth_token_secret": oauth_verifier }
+        auth_dict = { "oauth_token": oauth_token, "oauth_token_secret": oauth_verifier }
+        print(auth_dict)
+        auth.request_token = auth_dict
         auth.get_access_token(oauth_verifier)
         api = tweepy.API(auth)
         print(api)
-        user = api.me()
+        # print("ACCESS TOKEN: ",auth.access_token)
+        # print("ACCESS SECRET: ", auth.access_token_secret)
+
+        # You can save the access token and secret to a file or database and reuse them as seen below
+        
+        # user_auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        # user_auth.set_access_token(auth.access_token, auth.access_token_secret)
+        # user_api = tweepy.API(user_auth)
+
+        user = api.verify_credentials()
         username = user.screen_name
         user_id = user.id
         return json.dumps({"message":"success", "user_id": user_id, "username": username, "access_token": auth.access_token, "access_token_secret": auth.access_token_secret})
